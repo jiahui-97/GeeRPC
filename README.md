@@ -15,8 +15,8 @@ RPC(Remote Procedure Call，远程过程调用)是一种计算机通信协议，
 ## 进度
 
 - [x] 服务端与消息编码
-- [ ] 高性能客户端
-- [ ] 服务注册
+- [x] 高性能客户端
+- [x] 服务注册
 - [ ] 超时处理
 - [ ] 支持HTTP协议
 - [ ] 负载均衡
@@ -44,3 +44,14 @@ RPC 的客户端主要实现两个功能，一个是包装请求并发送出去�
 for 循环一直接收响应，直到有错误产生，客户端起一个协程即可；
 
 循环内部，解码 header，如果有错误就处理错误；无错时解码 body 得到 reply
+
+### 3. 服务注册
+对 net/rpc 而言，一个函数需要能够被远程调用，需要满足如下五个条件：
+
+- the method’s type is exported. – 方法所属类型是导出的。
+- the method is exported. – 方式是导出的。
+- the method has two arguments, both exported (or builtin) types. – 两个入参，均为导出或内置类型。
+- the method’s second argument is a pointer. – 第二个入参必须是一个指针。
+- the method has return type error. – 返回值为 error 类型。
+
+通过 service.methodname 可以知道对应的 method，为了不重复匹配不同的 method，需要用反射获取某个结构体的所有方法，并且能够通过方法，获取到该方法所有的参数类型与返回值。
